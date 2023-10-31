@@ -19,8 +19,8 @@
             nodejs_20
           ];
 
-          MIX_HOME = "/home/mateus/playground/elixir/elmir/.mix";
-          MIX_ARCHIVES = "/home/mateus/playground/elixir/elmir/.mix/archives";
+          MIX_HOME = "/home/mateus/projects/elmir/.mix";
+          MIX_ARCHIVES = "/home/mateus/projects/elmir/.mix/archives";
         };
       });
 }

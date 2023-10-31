@@ -24,7 +24,7 @@ defmodule ElmirWeb.Router do
   scope "/api", ElmirWeb do
     pipe_through :api
 
-    get "/users", UsersController, :index
+    get "/comics", ComicsController, :index
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

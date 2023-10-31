@@ -9,15 +9,15 @@ import List exposing (map)
 
 
 type alias Model =
-    List User
+    List Comic
 
 
-type alias User =
-    { name : String }
+type alias Comic =
+    { title : String }
 
 
 type Message
-    = LoadData (Result Http.Error (List User))
+    = LoadData (Result Http.Error (List Comic))
 
 
 main : Program () Model Message
@@ -27,13 +27,13 @@ main =
 
 init : () -> ( Model, Cmd Message )
 init _ =
-    ( [], Http.get { url = "/api/users", expect = Http.expectJson LoadData usersDecoder } )
+    ( [], Http.get { url = "/api/comics", expect = Http.expectJson LoadData comicsDecoder } )
 
 
 view : Model -> Html.Html msg
 view model =
     main_ [ class "flex justify-center items-center h-screen w-screen" ]
-        [ viewUsers model
+        [ viewComics model
         ]
 
 
@@ -54,22 +54,22 @@ subscriptions _ =
     Sub.none
 
 
-viewUsers : List User -> Html.Html msg
-viewUsers users =
-    ul [] (map viewUser users)
+viewComics : List Comic -> Html.Html msg
+viewComics comics =
+    ul [] (map viewComic comics)
 
 
-viewUser : User -> Html.Html msg
-viewUser user =
+viewComic : Comic -> Html.Html msg
+viewComic comic =
     li []
-        [ text user.name ]
+        [ text comic.title ]
 
 
-usersDecoder : D.Decoder (List User)
-usersDecoder =
-    D.list userDecoder
+comicsDecoder : D.Decoder (List Comic)
+comicsDecoder =
+    D.list comicDecoder
 
 
-userDecoder : D.Decoder User
-userDecoder =
-    D.map User (D.field "name" D.string)
+comicDecoder : D.Decoder Comic
+comicDecoder =
+    D.map Comic (D.field "title" D.string)

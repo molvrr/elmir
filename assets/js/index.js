@@ -9753,6 +9753,15 @@
         var $author$project$Main$LoadData = function(a) {
           return { $: "LoadData", a };
         };
+        var $author$project$Main$Comic = function(title) {
+          return { title };
+        };
+        var $author$project$Main$comicDecoder = A2(
+          $elm$json$Json$Decode$map,
+          $author$project$Main$Comic,
+          A2($elm$json$Json$Decode$field, "title", $elm$json$Json$Decode$string)
+        );
+        var $author$project$Main$comicsDecoder = $elm$json$Json$Decode$list($author$project$Main$comicDecoder);
         var $elm$http$Http$BadStatus_ = F2(
           function(a, b) {
             return { $: "BadStatus_", a, b };
@@ -10040,22 +10049,13 @@
             { body: $elm$http$Http$emptyBody, expect: r.expect, headers: _List_Nil, method: "GET", timeout: $elm$core$Maybe$Nothing, tracker: $elm$core$Maybe$Nothing, url: r.url }
           );
         };
-        var $author$project$Main$User = function(name) {
-          return { name };
-        };
-        var $author$project$Main$userDecoder = A2(
-          $elm$json$Json$Decode$map,
-          $author$project$Main$User,
-          A2($elm$json$Json$Decode$field, "name", $elm$json$Json$Decode$string)
-        );
-        var $author$project$Main$usersDecoder = $elm$json$Json$Decode$list($author$project$Main$userDecoder);
         var $author$project$Main$init = function(_v0) {
           return _Utils_Tuple2(
             _List_Nil,
             $elm$http$Http$get(
               {
-                expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadData, $author$project$Main$usersDecoder),
-                url: "/api/users"
+                expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadData, $author$project$Main$comicsDecoder),
+                url: "/api/comics"
               }
             )
           );
@@ -10077,22 +10077,22 @@
           }
         );
         var $elm$html$Html$main_ = _VirtualDom_node("main");
-        var $author$project$Main$viewUser = function(user) {
+        var $author$project$Main$viewComic = function(comic) {
           return A2(
             $elm$html$Html$li,
             _List_Nil,
             _List_fromArray(
               [
-                $elm$html$Html$text(user.name)
+                $elm$html$Html$text(comic.title)
               ]
             )
           );
         };
-        var $author$project$Main$viewUsers = function(users) {
+        var $author$project$Main$viewComics = function(comics) {
           return A2(
             $elm$html$Html$ul,
             _List_Nil,
-            A2($elm$core$List$map, $author$project$Main$viewUser, users)
+            A2($elm$core$List$map, $author$project$Main$viewComic, comics)
           );
         };
         var $author$project$Main$view = function(model) {
@@ -10105,7 +10105,7 @@
             ),
             _List_fromArray(
               [
-                $author$project$Main$viewUsers(model)
+                $author$project$Main$viewComics(model)
               ]
             )
           );
@@ -10115,7 +10115,7 @@
         );
         _Platform_export({ "Main": { "init": $author$project$Main$main(
           $elm$json$Json$Decode$succeed(_Utils_Tuple0)
-        )({ "versions": { "elm": "0.19.1" }, "types": { "message": "Main.Message", "aliases": { "Main.User": { "args": [], "type": "{ name : String.String }" } }, "unions": { "Main.Message": { "args": [], "tags": { "LoadData": ["Result.Result Http.Error (List.List Main.User)"] } }, "Http.Error": { "args": [], "tags": { "BadUrl": ["String.String"], "Timeout": [], "NetworkError": [], "BadStatus": ["Basics.Int"], "BadBody": ["String.String"] } }, "List.List": { "args": ["a"], "tags": {} }, "Result.Result": { "args": ["error", "value"], "tags": { "Ok": ["value"], "Err": ["error"] } }, "String.String": { "args": [], "tags": { "String": [] } }, "Basics.Int": { "args": [], "tags": { "Int": [] } } } } }) } });
+        )({ "versions": { "elm": "0.19.1" }, "types": { "message": "Main.Message", "aliases": { "Main.Comic": { "args": [], "type": "{ title : String.String }" } }, "unions": { "Main.Message": { "args": [], "tags": { "LoadData": ["Result.Result Http.Error (List.List Main.Comic)"] } }, "Http.Error": { "args": [], "tags": { "BadUrl": ["String.String"], "Timeout": [], "NetworkError": [], "BadStatus": ["Basics.Int"], "BadBody": ["String.String"] } }, "List.List": { "args": ["a"], "tags": {} }, "Result.Result": { "args": ["error", "value"], "tags": { "Ok": ["value"], "Err": ["error"] } }, "String.String": { "args": [], "tags": { "String": [] } }, "Basics.Int": { "args": [], "tags": { "Int": [] } } } } }) } });
       })(exports);
     }
   });
