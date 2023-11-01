@@ -7188,8 +7188,8 @@
         var $elm$browser$Debugger$Metadata$hasProblem = F2(
           function(tipe, _v0) {
             var problem = _v0.a;
-            var token = _v0.b;
-            return A2($elm$core$String$contains, token, tipe) ? $elm$core$Maybe$Just(problem) : $elm$core$Maybe$Nothing;
+            var token2 = _v0.b;
+            return A2($elm$core$String$contains, token2, tipe) ? $elm$core$Maybe$Just(problem) : $elm$core$Maybe$Nothing;
           }
         );
         var $elm$browser$Debugger$Metadata$Decoder = { $: "Decoder" };
@@ -9753,13 +9753,32 @@
         var $author$project$Main$LoadData = function(a) {
           return { $: "LoadData", a };
         };
-        var $author$project$Main$Comic = function(title) {
-          return { title };
+        var $author$project$Main$Comic = F2(
+          function(title, cover) {
+            return { cover, title };
+          }
+        );
+        var $elm$json$Json$Decode$null = _Json_decodeNull;
+        var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+        var $elm$json$Json$Decode$nullable = function(decoder) {
+          return $elm$json$Json$Decode$oneOf(
+            _List_fromArray(
+              [
+                $elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+                A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, decoder)
+              ]
+            )
+          );
         };
-        var $author$project$Main$comicDecoder = A2(
-          $elm$json$Json$Decode$map,
+        var $author$project$Main$comicDecoder = A3(
+          $elm$json$Json$Decode$map2,
           $author$project$Main$Comic,
-          A2($elm$json$Json$Decode$field, "title", $elm$json$Json$Decode$string)
+          A2($elm$json$Json$Decode$field, "title", $elm$json$Json$Decode$string),
+          A2(
+            $elm$json$Json$Decode$field,
+            "cover",
+            $elm$json$Json$Decode$nullable($elm$json$Json$Decode$string)
+          )
         );
         var $author$project$Main$comicsDecoder = $elm$json$Json$Decode$list($author$project$Main$comicDecoder);
         var $elm$http$Http$BadStatus_ = F2(
@@ -10051,7 +10070,7 @@
         };
         var $author$project$Main$init = function(_v0) {
           return _Utils_Tuple2(
-            _List_Nil,
+            { comics: _List_Nil, token: $elm$core$Maybe$Nothing },
             $elm$http$Http$get(
               {
                 expect: A2($elm$http$Http$expectJson, $author$project$Main$LoadData, $author$project$Main$comicsDecoder),
@@ -10060,29 +10079,81 @@
             )
           );
         };
-        var $elm$core$Platform$Sub$batch = _Platform_batch;
-        var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+        var $author$project$Main$CsrfToken = function(a) {
+          return { $: "CsrfToken", a };
+        };
+        var $author$project$Main$csrfToken = _Platform_incomingPort("csrfToken", $elm$json$Json$Decode$string);
         var $author$project$Main$subscriptions = function(_v0) {
-          return $elm$core$Platform$Sub$none;
+          return $author$project$Main$csrfToken($author$project$Main$CsrfToken);
         };
         var $author$project$Main$update = F2(
           function(msg, model) {
-            var result = msg.a;
-            if (result.$ === "Ok") {
-              var body = result.a;
-              return _Utils_Tuple2(body, $elm$core$Platform$Cmd$none);
+            if (msg.$ === "LoadData") {
+              var result = msg.a;
+              if (result.$ === "Ok") {
+                var body = result.a;
+                return _Utils_Tuple2(
+                  _Utils_update(
+                    model,
+                    { comics: body }
+                  ),
+                  $elm$core$Platform$Cmd$none
+                );
+              } else {
+                return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+              }
             } else {
-              return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+              var token2 = msg.a;
+              return _Utils_Tuple2(
+                _Utils_update(
+                  model,
+                  {
+                    token: $elm$core$Maybe$Just(token2)
+                  }
+                ),
+                $elm$core$Platform$Cmd$none
+              );
             }
           }
         );
         var $elm$html$Html$main_ = _VirtualDom_node("main");
+        var $elm$html$Html$img = _VirtualDom_node("img");
+        var $elm$html$Html$Attributes$src = function(url) {
+          return A2(
+            $elm$html$Html$Attributes$stringProperty,
+            "src",
+            _VirtualDom_noJavaScriptOrHtmlUri(url)
+          );
+        };
+        var $author$project$Main$showCover = function(_v0) {
+          var cover = _v0.cover;
+          if (cover.$ === "Just") {
+            var coverUrl = cover.a;
+            return A2(
+              $elm$html$Html$img,
+              _List_fromArray(
+                [
+                  $elm$html$Html$Attributes$class("max-h-80 rounded drop-shadow"),
+                  $elm$html$Html$Attributes$src(coverUrl)
+                ]
+              ),
+              _List_Nil
+            );
+          } else {
+            return $elm$html$Html$text("Sem capa");
+          }
+        };
         var $author$project$Main$viewComic = function(comic) {
           return A2(
-            $elm$html$Html$li,
-            _List_Nil,
+            $elm$html$Html$div,
             _List_fromArray(
               [
+                $elm$html$Html$Attributes$class("flex flex-col items-center")
+              ]
+            ),
+            _List_fromArray(
+              [
+                $author$project$Main$showCover(comic),
                 $elm$html$Html$text(comic.title)
               ]
             )
@@ -10090,8 +10161,12 @@
         };
         var $author$project$Main$viewComics = function(comics) {
           return A2(
-            $elm$html$Html$ul,
-            _List_Nil,
+            $elm$html$Html$div,
+            _List_fromArray(
+              [
+                $elm$html$Html$Attributes$class("flex")
+              ]
+            ),
             A2($elm$core$List$map, $author$project$Main$viewComic, comics)
           );
         };
@@ -10105,7 +10180,7 @@
             ),
             _List_fromArray(
               [
-                $author$project$Main$viewComics(model)
+                $author$project$Main$viewComics(model.comics)
               ]
             )
           );
@@ -10115,7 +10190,7 @@
         );
         _Platform_export({ "Main": { "init": $author$project$Main$main(
           $elm$json$Json$Decode$succeed(_Utils_Tuple0)
-        )({ "versions": { "elm": "0.19.1" }, "types": { "message": "Main.Message", "aliases": { "Main.Comic": { "args": [], "type": "{ title : String.String }" } }, "unions": { "Main.Message": { "args": [], "tags": { "LoadData": ["Result.Result Http.Error (List.List Main.Comic)"] } }, "Http.Error": { "args": [], "tags": { "BadUrl": ["String.String"], "Timeout": [], "NetworkError": [], "BadStatus": ["Basics.Int"], "BadBody": ["String.String"] } }, "List.List": { "args": ["a"], "tags": {} }, "Result.Result": { "args": ["error", "value"], "tags": { "Ok": ["value"], "Err": ["error"] } }, "String.String": { "args": [], "tags": { "String": [] } }, "Basics.Int": { "args": [], "tags": { "Int": [] } } } } }) } });
+        )({ "versions": { "elm": "0.19.1" }, "types": { "message": "Main.Message", "aliases": { "Main.Comic": { "args": [], "type": "{ title : String.String, cover : Maybe.Maybe String.String }" } }, "unions": { "Main.Message": { "args": [], "tags": { "LoadData": ["Result.Result Http.Error (List.List Main.Comic)"], "CsrfToken": ["String.String"] } }, "Http.Error": { "args": [], "tags": { "BadUrl": ["String.String"], "Timeout": [], "NetworkError": [], "BadStatus": ["Basics.Int"], "BadBody": ["String.String"] } }, "List.List": { "args": ["a"], "tags": {} }, "Maybe.Maybe": { "args": ["a"], "tags": { "Just": ["a"], "Nothing": [] } }, "Result.Result": { "args": ["error", "value"], "tags": { "Ok": ["value"], "Err": ["error"] } }, "String.String": { "args": [], "tags": { "String": [] } }, "Basics.Int": { "args": [], "tags": { "Int": [] } } } } }) } });
       })(exports);
     }
   });
@@ -10123,8 +10198,10 @@
   // src/index.js
   var import_Main = __toESM(require_Main());
   var $root = document.createElement("div");
+  var token = document.querySelector("meta[name='csrf-token']").getAttribute("content");
   document.body.appendChild($root);
-  import_Main.Elm.Main.init({
+  var app = import_Main.Elm.Main.init({
     node: $root
   });
+  app.ports.csrfToken.send(token);
 })();

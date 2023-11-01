@@ -4,6 +4,7 @@ defmodule Elmir.Comic do
 
   schema "comics" do
     field :title, :string
+    field :cover, :string
 
     timestamps(type: :utc_datetime)
   end
@@ -11,7 +12,7 @@ defmodule Elmir.Comic do
   @doc false
   def changeset(comic, attrs) do
     comic
-    |> cast(attrs, [:title])
+    |> cast(attrs, [:title, :cover])
     |> validate_required([:title])
   end
 end

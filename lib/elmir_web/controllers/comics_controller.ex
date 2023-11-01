@@ -1,9 +1,11 @@
 defmodule ElmirWeb.ComicsController do
   use ElmirWeb, :controller
 
-  def index(conn, _params) do
-    users = [%{title: "Oyasumi Punpun"}, %{title: "Gash Bell!"}]
+  alias Elmir.{Comic, Repo}
 
-    json(conn, users)
+  def index(conn, _params) do
+    comics = Repo.all(Comic) |> Enum.map(fn %Comic{ title: title, cover: cover } -> %{ title: title, cover: cover } end)
+
+    json(conn, comics)
   end
 end
